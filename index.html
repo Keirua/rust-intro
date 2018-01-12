@@ -20,18 +20,310 @@
             link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
             document.getElementsByTagName( 'head' )[0].appendChild( link );
         </script>
+        <style type="text/css">
+            .reveal pre code {
+                max-height:100%;
+            }
+        </style>
     </head>
     <body>
         <div class="reveal">
             <div class="slides">
+
                 <section>
-                    <section>Slide 1</section>
-                    <section>Slide 2</section>
+                    <section>
+                        <h2>Rust </h2>
+                        <ul>
+                            <li>What makes Rust powerful ?</li>
+                            <li>How to get started ?</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Highlights</h3>
+                        <ul>
+                            <li>Cargo, tooling with muscles</li>
+                            <li>Exclusive access on data</li>
+                            <li>Community</li>
+                            <li>FFI, rust speaks foreign languages</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2>A simple project</h2>
+                        <p>grep-like</p>
+                        <p>Given a file and a pattern, find all the lines that contain this pattern</p>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo new demo-rust --bin
+$ tree demo-rust
+demo-rust
+├── Cargo.toml
+├── .git
+│   ├── config
+│   ├── description
+│   ...
+├── .gitignore
+└── src
+    └── main.rs
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+// Cargo.toml
+[package]
+name = "demo-rust"
+version = "0.1.0"
+authors = ["clement camin <clement@keiruaprod.fr>"]
+
+[dependencies]
+</code></pre>           
+                    </section>
+                    <section>
+
+                        <pre><code data-trim data-noescape>
+// src/main.rs
+fn main() {
+    println!("Hello, world!");
+}
+                        </code></pre>           
+                        <pre><code data-trim data-noescape>
+cargo run
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.48 secs
+     Running `target/debug/demo-rust`
+Hello, world!
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+# renaud.txt
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme"
+Moi la mer elle m'a pris
+Je m'souviens, un mardi
+
+J'ai troqué mes santiag'
+Et mon cuir un peu zone
+contre une paire de dockside
+Et un vieux ciré jaune,</code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+use std::fs::File;
+use std::io::prelude::*;
+use std::error::Error;
+
+fn main() {
+    let filename = "renaud.txt";
+    println!("Reading {}", filename);
+
+    let mut f = match File::open(&filename) {
+        Err(why) => panic!("couldn't open {}: {}",
+                        filename,
+                        why.description()),
+        Ok(file) => file,
+    };
+
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)
+        .expect("Something went wrong reading the file");
+
+    println!("\n{}", contents);
+}
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h3>Valid file</h3>
+                        <pre><code data-trim data-noescape>
+Reading renaud.txt
+
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme"
+Moi la mer elle m'a pris
+Je m'souviens, un mardi
+
+J'ai troqué mes santiag'
+Et mon cuir un peu zone
+contre une paire de dockside
+Et un vieux ciré jaune,
+                        </code></pre>
+
+                        <h3>Non-existing file</h3>
+                        <pre><code data-trim data-noescape>
+Reading plop.txt
+thread 'main' panicked at 'couldn't open plop.txt: entity not found', src/main.rs:12:20
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+fn search(query: &str, contents: &str) -> Vec &lt;String> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(String::from(line));
+        }
+    }
+
+    results
+}
+</code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+fn main() {
+    let filename = "renaud.txt";
+    let query = "mer";
+    // ...
+    // Replace file display with match display:
+    let matches = search(query, &contents);
+    println!("Matches for \"{}\":\n", query);
+    for current_match in matches {
+        println!("{}", current_match);
+    }
+}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+     Running `target/debug/demo-rust`
+Reading renaud.txt
+Matches for "plop":
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme"
+Moi la mer elle m'a pris
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h3>A reference instead of a copy</h3>
+                        <pre><code data-trim data-noescape>
+fn search<'a>(query: &str, contents: &'a str) -> Vec< &'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+let matches = search(query, &contents);
+println!("Matches for \"{}\":\n", query);
+for current_match in matches {
+    println!("{}", current_match);
+}
+contents += "plop";
+                        </code></pre>
+                        <pre><code data-trim data-noescape>
+error[E0502]: cannot borrow `contents` as mutable because
+it is also borrowed as immutable
+  --> src/main.rs:38:5
+   |
+34 |     let matches = search(query, &contents);
+   |                                  -------- immutable borrow
+                                               occurs here
+...
+38 |     contents += "plop";
+   |     ^^^^^^^^ mutable borrow occurs here
+39 | }
+   | - immutable borrow ends here
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let query = "mardi";
+        let contents = "\
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi";
+
+        assert_eq!(
+            vec!["Je m'souviens, un mardi"],
+            search(query, contents)
+        );
+    }
+}</code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo test    
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.82 secs
+     Running target/debug/deps/demo_rust-84797c122ed591c9
+
+running 1 test
+test test::one_result ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+</code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+
+                        </code></pre>
+                    </section>
                 </section>
-                
+
+
+
+
+
                 <section>
-                    <section>Slide 3</section>
-                    <section>Slide 4</section>
+                    <section><h2>Community</h2></section>
+                    <section>
+                        <h3>Crates.io</h3>
+                         http://crates.io
+                    </section>
+                    <section>
+                        <h3>Active subreddit</h3>
+                        http://reddit.com/r/rust/
+                    </section>
+                    <section>
+                        <h3>This Week in rust</h3>
+                        http://this-week-in-rust.org/
+                    </section>
+                    <section>
+                        <h3>Rust Meetup</h3>
+                        https://www.meetup.com/fr-FR/Rust-Paris/
+                    </section>
+                </section>
+
+                <section>
+                    <section><h2>Learning Rust</h2></section>
+                    <section>
+                    <ul>
+                        <li>The Rust Book</li>
+                         https://doc.rust-lang.org/book/second-edition/
+                        <li>RustByExample.com</li>
+                        <li>Rust youtube channel
+                        https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA/videos
+                        </li>
+                    </ul>
+                    </section>
                 </section>
             </div>
         </div>

@@ -1,0 +1,7 @@
+[package]
+name = "demo-rust"
+version = "0.1.0"
+authors = ["clement camin <clement@keiruaprod.fr>"]
+
+[dependencies]
+clap="2.29.1"

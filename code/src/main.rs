@@ -1,0 +1,90 @@
+use std::fs::File;
+use std::io::prelude::*;
+use std::error::Error;
+
+extern crate clap;
+
+use clap::{App, Arg};
+
+/// Find matches in string
+///
+/// ```
+/// let contents = "\
+/// Moi la mer elle m'a pris
+/// Je m'souviens, un mardi";
+/// 
+/// assert_eq!(
+///    vec!["Je m'souviens, un mardi"],
+///    search(query, contents)
+/// );
+/// ```
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+
+fn main() {
+    let parameters = App::new("rust-demo")
+                        .version("1.0")
+                        .about("Search for strings in file")
+                        .arg(Arg::with_name("file")
+                                    .short("f")
+                                    .long("file")
+                                    .required(true)
+                                    .help("The file we want to open"))
+                        .arg(Arg::with_name("query")
+                                    .help("The string we are looking for")
+                                    .required(true)
+                                    .short("q")
+                                    .long("query")
+                                    )
+                        .get_matches();
+    println!("{:?}", parameters);
+    let filename = parameters.value_of("file").unwrap();
+    let query = parameters.value_of("query").unwrap();
+
+    println!("Reading {}", filename);
+
+    let mut f = match File::open(&filename) {
+        Err(why) => panic!("couldn't open {}: {}", filename,
+                                                   why.description()),
+        Ok(file) => file,
+    };
+
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)
+        .expect("Something went wrong reading the file");
+
+    println!("Matches for {}\n", query);
+    
+    let matches = search(query, &contents);
+    for current_match in matches {
+        println!("{}", current_match);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let contents = "\
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi";
+
+        assert_eq!(
+            vec!["Je m'souviens, un mardi"],
+            search("mardi", contents)
+        );
+    }
+}

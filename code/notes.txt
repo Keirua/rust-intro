@@ -1,0 +1,50 @@
+# init project
+
+ - cargo init
+ - structure projet en 2 mots: fichier toml, répertoire src. Quand on build, c'est rangé dans target/
+ - cargo run
+
+# Lecture d'un fichier
+
+on lit un fichier, on écrit son contenu dans le terminal
+
+ - décrire fonctionnement:
+  - imports
+  - déclarations de variables (inférence de type)
+  - gestion basique d'erreurs
+ - montrer une seconde version avec un match sur le open ? (il n'y a pas que lorsque le fichier est manquant que ça pète)
+
+# basic search
+
+ - declaration de fonctions
+ - debug d'un vec dans print
+ - version initiale avec String
+ - seconde version avec des références
+ - troisième version avec un "meilleur" affichage
+
+# unit test
+
+ -> cargo test
+ -> supporte également la doc test
+
+=> enchainer avec la communauté
+
+# clap
+
+cargo run -- --help
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.43 secs
+     Running `target/debug/demo-rust --help`
+rust-demo 1.0
+Search for strings in file
+
+USAGE:
+    demo-rust [FLAGS] [query]
+
+FLAGS:
+    -f, --file       The file we want to open
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+ARGS:
+    <query>    The string we are looking for
