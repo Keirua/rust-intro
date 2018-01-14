@@ -6,18 +6,6 @@ extern crate clap;
 
 use clap::{App, Arg};
 
-/// Find matches in string
-///
-/// ```
-/// let contents = "\
-/// Moi la mer elle m'a pris
-/// Je m'souviens, un mardi";
-/// 
-/// assert_eq!(
-///    vec!["Je m'souviens, un mardi"],
-///    search(query, contents)
-/// );
-/// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
 
@@ -34,21 +22,18 @@ fn main() {
     let parameters = App::new("rust-demo")
                         .version("1.0")
                         .about("Search for strings in file")
-                        .arg(Arg::with_name("file")
-                                    .short("f")
-                                    .long("file")
-                                    .required(true)
-                                    .help("The file we want to open"))
-                        .arg(Arg::with_name("query")
+                        .arg(Arg::with_name("pattern")
                                     .help("The string we are looking for")
-                                    .required(true)
-                                    .short("q")
-                                    .long("query")
-                                    )
+                                    .index(1)
+                                    .required(true))
+                        .arg(Arg::with_name("file")
+                                    .help("The file we want to open")
+                                    .index(2)
+                                    .required(true))
                         .get_matches();
-    println!("{:?}", parameters);
+
     let filename = parameters.value_of("file").unwrap();
-    let query = parameters.value_of("query").unwrap();
+    let query = parameters.value_of("pattern").unwrap();
 
     println!("Reading {}", filename);
 
