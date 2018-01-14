@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <title>reveal.js</title>
+        <title>Discovering Rust</title>
 
         <link rel="stylesheet" href="css/reveal.css">
         <link rel="stylesheet" href="css/theme/black.css">
@@ -32,11 +32,17 @@
 
                 <section>
                     <section>
-                        <h2>Rust </h2>
+                        <h2>Discovering Rust</h2>
                         <ul>
                             <li>What makes Rust powerful ?</li>
                             <li>How to get started ?</li>
                         </ul>
+                    </section>
+                    <section>
+                        <h2>Who we are</h2>
+                    </section>
+                    <section>
+                        <blockquote>Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.</blockquote>
                     </section>
                     <section>
                         <h3>Highlights</h3>
@@ -54,6 +60,11 @@
                         <p>Given a file and a pattern, find all the lines that contain this pattern</p>
                     </section>
 
+                </section>
+                <section>
+                    <section>
+                        <h2>cargo</h2>
+                    </section>
                     <section>
                         <pre><code data-trim data-noescape>
 $ cargo new demo-rust --bin
@@ -96,8 +107,13 @@ cargo run
 Hello, world!
                         </code></pre>
                     </section>
-
+                </section>
+                <section>
                     <section>
+                        <h2>Discovering the langage</h2>
+                    </section>
+                    <section>
+                        <h3>First step: file reading</h3>
                         <pre><code data-trim data-noescape>
 # renaud.txt
 C'est pas l'homme qui prend la mer
@@ -162,6 +178,7 @@ note: Run with `RUST_BACKTRACE=1` for a backtrace.
                     </section>
 
                     <section>
+                        <h3>Second step: finding matches</h3>
                         <pre><code data-trim data-noescape>
 fn search(query: &str, contents: &str) -> Vec &lt;String> {
     let mut results = Vec::new();
@@ -221,6 +238,7 @@ fn search<'a>(query: &str, contents: &'a str) -> Vec< &'a str> {
                         </code></pre>
                     </section>
                     <section>
+                        <h3>Enter the borrow checker</h3>
                         <pre><code data-trim data-noescape>
 let matches = search(query, &contents);
 println!("Matches for \"{}\":\n", query);
@@ -244,6 +262,10 @@ it is also borrowed as immutable
    | - immutable borrow ends here
                         </code></pre>
                     </section>
+                    <section>
+                        Ok, let's take a step back. What are the implications ?
+                    </section>
+
 
                     <section>
                         <pre><code data-trim data-noescape>
@@ -289,9 +311,6 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
                 </section>
 
 
-
-
-
                 <section>
                     <section><h2>Community</h2></section>
                     <section>
@@ -310,6 +329,30 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
                         <h3>Rust Meetup</h3>
                         https://www.meetup.com/fr-FR/Rust-Paris/
                     </section>
+                    <section>
+                        todo: add example of integration of an external crate ?
+                        -> maybe not impressive for webdev, but look at it through the eyes of a:
+                         - C++ developper, with CMake
+                         - a go developper (go get)
+                    </section>
+                </section>
+
+
+                <section>
+                    <section><h2>Integration with other languages</h2></section>
+                </section>
+
+
+                <section>
+                    <section>
+                        <h2>More good things</h2>
+                        <ul>
+                            <li>generics</li>
+                            <li>concurrency</li>
+                        </ul>
+
+                    </section>
+                    <section><h2>conclusion/recap</h2></section>
                 </section>
 
                 <section>
