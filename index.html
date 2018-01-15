@@ -33,42 +33,44 @@
                 <section>
                     <section>
                         <h2>Discovering Rust</h2>
-                        <ul>
-                            <li>What makes Rust powerful ?</li>
-                            <li>How to get started ?</li>
-                        </ul>
                     </section>
                     <section>
-                        <h2>Who we are</h2>
-                    </section>
-                    <section>
+                        <img src="img/rust-logo-256x256-blk.png" />
                         <blockquote>Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.</blockquote>
                     </section>
                     <section>
-                        <h3>Highlights</h3>
+                        <h3>Focus</h3>
                         <ul>
-                            <li>Cargo, tooling with muscles</li>
+                            <li>Tooling</li>
                             <li>Exclusive access on data</li>
                             <li>Community</li>
-                            <li>FFI, rust speaks foreign languages</li>
+                            <li>Integration with other languages</li>
                         </ul>
                     </section>
-
                     <section>
-                        <h2>A simple project</h2>
-                        <p>grep-like</p>
-                        <p>Given a file and a pattern, find all the lines that contain this pattern</p>
-                    </section>
+                        <h3>A simple project</h3>
+                        <p>grep-like: find the lines of a file that contain a pattern</p>
+                        <pre><code data-trim data-noescape>
+$ ./demo-rust --help
+USAGE:
+    demo-rust &lt;pattern&gt; &lt;file&gt;
 
+ARGS:
+    &lt;pattern&gt;    The string we are looking for
+    &lt;file&gt;       The file we want to open
+                        </code></pre>
+                    </section>
                 </section>
                 <section>
                     <section>
                         <h2>cargo</h2>
+                        <p>Goal: bootstrap the project</p>
                     </section>
                     <section>
                         <pre><code data-trim data-noescape>
 $ cargo new demo-rust --bin
-$ tree demo-rust
+                        </code></pre>
+                        <pre class="fragment"><code data-trim data-noescape>
 demo-rust
 ├── Cargo.toml
 ├── .git
@@ -82,35 +84,54 @@ demo-rust
                     </section>
                     <section>
                         <pre><code data-trim data-noescape>
-// Cargo.toml
+# Cargo.toml
 [package]
 name = "demo-rust"
 version = "0.1.0"
-authors = ["clement camin <clement@keiruaprod.fr>"]
+authors = ["clement camin &lt;clement@keiruaprod.fr&gt;"]
 
 [dependencies]
-</code></pre>           
-                    </section>
-                    <section>
+</code></pre>
 
-                        <pre><code data-trim data-noescape>
+                        <pre class="fragment"><code data-trim data-noescape>
 // src/main.rs
 fn main() {
     println!("Hello, world!");
 }
                         </code></pre>           
-                        <pre><code data-trim data-noescape>
-cargo run
+                        <pre class="fragment"><code data-trim data-noescape>
+$ cargo run
    Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
     Finished dev [unoptimized + debuginfo] target(s) in 0.48 secs
      Running `target/debug/demo-rust`
 Hello, world!
                         </code></pre>
                     </section>
+                    <section>
+                        <h3>Issues that common languages have</h3>
+<pre><code data-trim data-noescape>
+#include &lt;iostream&gt;
+
+int main(){
+    unsigned int a = 2;
+    a -= 5.3;
+    std::cout << a << std::endl;
+}
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+$ g++ main.cpp -o cpp -Wall -ansi -pedantic
+# No errors or warning
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+$ ./cpp 
+4294967293
+</code></pre>
+                    </section>
                 </section>
                 <section>
                     <section>
                         <h2>Discovering the langage</h2>
+                        <p>Goal: find matches with hardcoded file and pattern</p>
                     </section>
                     <section>
                         <h3>First step: file reading</h3>
@@ -129,27 +150,29 @@ Et un vieux ciré jaune,</code></pre>
 
                     <section>
                         <pre><code data-trim data-noescape>
+
 use std::fs::File;
 use std::io::prelude::*;
 use std::error::Error;
-
+<span class="fragment">
 fn main() {
     let filename = "renaud.txt";
     println!("Reading {}", filename);
-
+</span><span class="fragment">
     let mut f = match File::open(&filename) {
         Err(why) => panic!("couldn't open {}: {}",
                         filename,
                         why.description()),
         Ok(file) => file,
     };
-
+</span><span class="fragment">
     let mut contents = String::new();
     f.read_to_string(&mut contents)
         .expect("Something went wrong reading the file");
-
+</span><span class="fragment">
     println!("\n{}", contents);
 }
+</span>
                         </code></pre>
                     </section>
 
@@ -168,13 +191,13 @@ Et mon cuir un peu zone
 contre une paire de dockside
 Et un vieux ciré jaune,
                         </code></pre>
-
+<span class="fragment">
                         <h3>Non-existing file</h3>
                         <pre><code data-trim data-noescape>
 Reading plop.txt
 thread 'main' panicked at 'couldn't open plop.txt: entity not found', src/main.rs:12:20
 note: Run with `RUST_BACKTRACE=1` for a backtrace.
-                        </code></pre>
+                        </code></pre></span>
                     </section>
 
                     <section>
@@ -245,19 +268,20 @@ println!("Matches for \"{}\":\n", query);
 for current_match in matches {
     println!("{}", current_match);
 }
-contents += "plop";
+<span class="fragment">// What if...
+contents += "plop";</span>
                         </code></pre>
-                        <pre><code data-trim data-noescape>
+                        <pre class="fragment"><code data-trim data-noescape>
 error[E0502]: cannot borrow `contents` as mutable because
 it is also borrowed as immutable
   --> src/main.rs:38:5
    |
-34 |     let matches = search(query, &contents);
-   |                                  -------- immutable borrow
-                                               occurs here
+34 |  let matches = search(query, &contents);
+   |                               -------- immutable borrow
+                                            occurs here
 ...
-38 |     contents += "plop";
-   |     ^^^^^^^^ mutable borrow occurs here
+38 |  contents += "plop";
+   |  ^^^^^^^^ mutable borrow occurs here
 39 | }
    | - immutable borrow ends here
                         </code></pre>
@@ -265,7 +289,6 @@ it is also borrowed as immutable
                     <section>
                         Ok, let's take a step back. What are the implications ?
                     </section>
-
 
                     <section>
                         <pre><code data-trim data-noescape>
@@ -302,46 +325,120 @@ test test::one_result ... ok
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 </code></pre>
                     </section>
-
-                    <section>
-                        <pre><code data-trim data-noescape>
-
-                        </code></pre>
-                    </section>
                 </section>
 
 
                 <section>
-                    <section><h2>Community</h2></section>
+                    <section>
+                        <h2>Community</h2>
+                        <p>Goal: add CLI support</p>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Active subreddit (r/rust)</li>
+                            <li>This Week in Rust (.org)</li>
+                            <li>Meetups</li>
+                        </ul>
+                    </section>
                     <section>
                         <h3>Crates.io</h3>
                          http://crates.io
                     </section>
                     <section>
-                        <h3>Active subreddit</h3>
-                        http://reddit.com/r/rust/
+                        <pre><code data-trim data-noescape>
+[dependencies]
+clap="2.29.1"</code></pre>
                     </section>
                     <section>
-                        <h3>This Week in rust</h3>
-                        http://this-week-in-rust.org/
-                    </section>
-                    <section>
-                        <h3>Rust Meetup</h3>
-                        https://www.meetup.com/fr-FR/Rust-Paris/
-                    </section>
-                    <section>
-                        todo: add example of integration of an external crate ?
-                        -> maybe not impressive for webdev, but look at it through the eyes of a:
-                         - C++ developper, with CMake
-                         - a go developper (go get)
-                    </section>
-                </section>
+                        <pre><code data-trim data-noescape>
+extern crate clap;
+use clap::{App, Arg};
+// ...
+fn main() {
+    let parameters = App::new("rust-demo")
+                        .version("1.0")
+                        .about("Search for strings in file")
+                        .arg(Arg::with_name("pattern")
+                            .help("The string we are looking for")
+                            .index(1)
+                            .required(true))
+                        .arg(Arg::with_name("file")
+                            .help("The file we want to open")
+                            .index(2)
+                            .required(true))
+                        .get_matches();
 
+    let filename = parameters.value_of("file").unwrap();
+    let query = parameters.value_of("pattern").unwrap();
+    // ...</code></pre>
+                   </section>
+                   <section>
+<pre><code data-trim data-noescape>$ cargo build --release
+   Compiling libc v0.2.35
+   Compiling bitflags v1.0.1
+   ...
+   Compiling atty v0.2.6
+   Compiling clap v2.29.1
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/rust-intro/code)
+    Finished release [optimized] target(s) in 30.13 secs
+<span class="fragment">$ ./target/release/demo-rust 
+error: The following required arguments were not provided:
+    &lt;pattern&gt;
+    &lt;file&gt;
+
+USAGE:
+    demo-rust &lt;pattern&gt; &lt;file&gt;
+
+For more information try --help</span>
+<span class="fragment">$ ./target/release/demo-rust mardi renaud.txt
+Reading renaud.txt
+Matches for mardi
+
+Je m'souviens, un mardi</span></code></pre>
+                   </section>
+                </section>
 
                 <section>
-                    <section><h2>Integration with other languages</h2></section>
-                </section>
+                    <section>
+                        <h2>Integration with other languages</h2>
+                    </section>
+                    <section>
+<pre><code data-trim data-noescape>
+[dependencies]
+libc = "*"
+[lib]
+crate-type = ["cdylib"]
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+extern crate libc;
+use libc::uint32_t;
 
+#[no_mangle]
+pub extern fn rs_add(a: uint32_t, b: uint32_t) -> uint32_t {
+    a + b
+}
+</code></pre>
+<pre  class="fragment"><code data-trim data-noescape>
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+
+extern uint32_t rs_add(uint32_t, uint32_t);
+
+int main(void) {
+  uint32_t sum = rs_add(1, 2);
+  printf("%d\n", sum);
+  return 0;
+}
+</code></pre>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Can deal with more complex arguments (str, objects)</li>
+                            <li>Web assembly build target</li>
+                            <li>http://jakegoulding.com/rust-ffi-omnibus for more</li>
+                        </ul>
+                    </section>
+                </section>
 
                 <section>
                     <section>

@@ -3,7 +3,6 @@ use std::io::prelude::*;
 use std::error::Error;
 
 extern crate clap;
-
 use clap::{App, Arg};
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
@@ -20,8 +19,6 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 
 fn main() {
     let parameters = App::new("rust-demo")
-                        .version("1.0")
-                        .about("Search for strings in file")
                         .arg(Arg::with_name("pattern")
                                     .help("The string we are looking for")
                                     .index(1)
