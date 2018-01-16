@@ -108,8 +108,24 @@ $ cargo run
 Hello, world!
                         </code></pre>
                     </section>
+
                     <section>
-                        <h3>Issues that common languages have</h3>
+                        <pre><code data-trim data-noescape>
+fn main() {
+    let a:u32 = 3;
+    a -= 5.3;
+    println!("{}", a);
+}
+</code></pre>
+                    </section>
+
+                    <section>
+                        <img src="img/are-we-IDE-yet.png">
+                    </section>
+
+
+                    <section>
+                        <h3>In many languages...</h3>
 <pre><code data-trim data-noescape>
 #include &lt;iostream&gt;
 
@@ -131,7 +147,7 @@ $ ./cpp
                 </section>
                 <section>
                     <section>
-                        <h2>Discovering the langage</h2>
+                        <h2>Discovering the language</h2>
                         <p>Goal: find matches with hardcoded file and pattern</p>
                     </section>
                     <section>
@@ -283,7 +299,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
                     <section>
                         <h3>A reference instead of a copy</h3>
                         <pre><code data-trim data-noescape>
-fn search<'a>(query: &str, contents: &'a str) -> Vec< &'a str> {
+fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
 
     for line in contents.lines() {
@@ -297,7 +313,6 @@ fn search<'a>(query: &str, contents: &'a str) -> Vec< &'a str> {
                         </code></pre>
                     </section>
                     <section>
-                        <h3>Enter the borrow checker</h3>
                         <pre><code data-trim data-noescape>
 let matches = search(query, &contents);
 println!("Matches for \"{}\":\n", query);
@@ -307,6 +322,7 @@ for current_match in matches {
 <span class="fragment">// What if...
 contents += "plop";</span>
                         </code></pre>
+                        <h3 class="fragment">Enter the borrow checker</h3>
                         <pre class="fragment"><code data-trim data-noescape>
 error[E0502]: cannot borrow `contents` as mutable because
 it is also borrowed as immutable
@@ -343,7 +359,7 @@ it is also borrowed as immutable
                     </section>
                     <section>
                         <h3>Crates.io</h3>
-                         http://crates.io
+
                     </section>
                     <section>
                         <pre><code data-trim data-noescape>
@@ -397,6 +413,12 @@ Matches for mardi
 
 Je m'souviens, un mardi</span></code></pre>
                    </section>
+                   <section>
+                         <ul>
+                             <li><a href="http://www.arewewebyet.org/">Are we web yet?</a></li>
+                             <li><a href="https://zsiciarz.github.io/24daysofrust/index.html">24days of rust</a></li>
+                         </ul>
+                   </section>
                 </section>
 
                 <section>
@@ -443,28 +465,28 @@ int main(void) {
 
                 <section>
                     <section>
-                        <h2>More good things</h2>
+                        <h2>Learning Rust</h2>
+                        <ul>
+                            <li><a href="https://doc.rust-lang.org/book/second-edition/">The Rust Book</a></li>
+                            <li><a href="RustByExample.com">RustByExample.com</a></li>
+                            <li><a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA/videos">Rust youtube channel</a></li>
+                            <li>AreWeIDEYet</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Much more !</h2>
                         <ul>
                             <li>generics</li>
+                            <li>traits</li>
+                            <li>functionnal</li>
+                            <li>unsafe</li>
+                            <li>macros</li>
                             <li>concurrency</li>
+                            <li>quickly evolving</li>
+                            <li>...</li>
                         </ul>
-
                     </section>
-                    <section><h2>conclusion/recap</h2></section>
-                </section>
-
-                <section>
-                    <section><h2>Learning Rust</h2></section>
-                    <section>
-                    <ul>
-                        <li>The Rust Book</li>
-                         https://doc.rust-lang.org/book/second-edition/
-                        <li>RustByExample.com</li>
-                        <li>Rust youtube channel
-                        https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA/videos
-                        </li>
-                    </ul>
-                    </section>
+                    <section><h2>Recap</h2></section>
                 </section>
             </div>
         </div>
