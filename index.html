@@ -63,11 +63,12 @@ ARGS:
                 </section>
                 <section>
                     <section>
-                        <h2>cargo</h2>
+                        <h2>Tools</h2>
                         <p>Goal: bootstrap the project</p>
                     </section>
                     <section>
-                        <pre><code data-trim data-noescape>
+                        <h3>cargo</h3>
+                        <pre class="fragment"><code data-trim data-noescape>
 $ cargo new demo-rust --bin
                         </code></pre>
                         <pre class="fragment"><code data-trim data-noescape>
@@ -138,7 +139,7 @@ $ ./cpp
                         <pre><code data-trim data-noescape>
 # renaud.txt
 C'est pas l'homme qui prend la mer
-C'est la mer qui prend l'homme"
+C'est la mer qui prend l'homme
 Moi la mer elle m'a pris
 Je m'souviens, un mardi
 
@@ -182,7 +183,7 @@ fn main() {
 Reading renaud.txt
 
 C'est pas l'homme qui prend la mer
-C'est la mer qui prend l'homme"
+C'est la mer qui prend l'homme
 Moi la mer elle m'a pris
 Je m'souviens, un mardi
 
@@ -239,9 +240,44 @@ $ cargo run
 Reading renaud.txt
 Matches for "plop":
 C'est pas l'homme qui prend la mer
-C'est la mer qui prend l'homme"
+C'est la mer qui prend l'homme
 Moi la mer elle m'a pris
                         </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let contents = "\
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi";
+
+        assert_eq!(
+            vec!["Je m'souviens, un mardi"],
+            search("mardi", contents)
+        );
+    }
+}</code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo test    
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.82 secs
+     Running target/debug/deps/demo_rust-84797c122ed591c9
+
+running 1 test
+test test::one_result ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+</code></pre>
                     </section>
 
                     <section>
@@ -290,41 +326,6 @@ it is also borrowed as immutable
                         Ok, let's take a step back. What are the implications ?
                     </section>
 
-                    <section>
-                        <pre><code data-trim data-noescape>
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn one_result() {
-        let query = "mardi";
-        let contents = "\
-C'est pas l'homme qui prend la mer
-C'est la mer qui prend l'homme
-Moi la mer elle m'a pris
-Je m'souviens, un mardi";
-
-        assert_eq!(
-            vec!["Je m'souviens, un mardi"],
-            search(query, contents)
-        );
-    }
-}</code></pre>
-                    </section>
-                    <section>
-                        <pre><code data-trim data-noescape>
-$ cargo test    
-   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.82 secs
-     Running target/debug/deps/demo_rust-84797c122ed591c9
-
-running 1 test
-test test::one_result ... ok
-
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
-</code></pre>
-                    </section>
                 </section>
 
 
