@@ -194,6 +194,9 @@ fn main() {
                     </section>
 
                     <section>
+                    <section>
+                        <a href="https://doc.rust-lang.org/std/result/enum.Result.html">Result</a>
+                    </section>
                         <h3>Valid file</h3>
                         <pre><code data-trim data-noescape>
 Reading renaud.txt
@@ -341,7 +344,18 @@ it is also borrowed as immutable
                     <section>
                         Ok, let's take a step back. What are the implications ?
                     </section>
-
+                    <section>
+                        <pre><code data-trim data-noescape>
+{
+    let matches = search(query, &contents);
+    println!("Matches for \"{}\":\n", query);
+    for current_match in matches {
+        println!("{}", current_match);
+    }
+}
+contents += "plop";
+                        </code></pre>
+                    </section>
                 </section>
 
 
@@ -363,8 +377,14 @@ it is also borrowed as immutable
                     </section>
                     <section>
                         <pre><code data-trim data-noescape>
-[dependencies]
-clap="2.29.1"</code></pre>
+# Cargo.toml
+[package]
+name = "demo-rust"
+version = "0.1.0"
+authors = ["clement camin &lt;clement@keiruaprod.fr&gt;"]
+
+<span class="fragment">[dependencies]
+clap="2.29.1"</span></code></pre>
                     </section>
                     <section>
                         <pre><code data-trim data-noescape>
