@@ -1,0 +1,531 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Discovering Rust</title>
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/black.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+        <style type="text/css">
+            .reveal pre code {
+                max-height:100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+
+                <section>
+                    <section>
+                        <h2>Discovering Rust</h2>
+                    </section>
+                    <section>
+                        <img src="img/rust-logo-256x256-blk.png" />
+                        <blockquote>Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.</blockquote>
+                    </section>
+                    <section>
+                        <h3>Focus</h3>
+                        <ul>
+                            <li>Tooling</li>
+                            <li>Exclusive access on data</li>
+                            <li>Community</li>
+                            <li>Integration with other languages</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>A simple project</h3>
+                        <p>grep-like: find the lines of a file that contain a pattern</p>
+                        <pre><code data-trim data-noescape>
+$ ./demo-rust --help
+USAGE:
+    demo-rust &lt;pattern&gt; &lt;file&gt;
+
+ARGS:
+    &lt;pattern&gt;    The string we are looking for
+    &lt;file&gt;       The file we want to open
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Tools</h2>
+                        <p>Goal: bootstrap the project</p>
+                    </section>
+                    <section>
+                        <h3>cargo</h3>
+                        <pre class="fragment"><code data-trim data-noescape>
+$ cargo new demo-rust --bin
+                        </code></pre>
+                        <pre class="fragment"><code data-trim data-noescape>
+demo-rust
+├── Cargo.toml
+├── .git
+│   ├── config
+│   ├── description
+│   ...
+├── .gitignore
+└── src
+    └── main.rs
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+# Cargo.toml
+[package]
+name = "demo-rust"
+version = "0.1.0"
+authors = ["clement camin &lt;clement@keiruaprod.fr&gt;"]
+
+[dependencies]
+</code></pre>
+
+                        <pre class="fragment"><code data-trim data-noescape>
+// src/main.rs
+fn main() {
+    println!("Hello, world!");
+}
+                        </code></pre>           
+                        <pre class="fragment"><code data-trim data-noescape>
+$ cargo run
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.48 secs
+     Running `target/debug/demo-rust`
+Hello, world!
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+fn main() {
+    let a:u32 = 3;
+    a -= 5.3;
+    println!("{}", a);
+}
+</code></pre>
+                    </section>
+
+                    <section>
+                        <img src="img/are-we-IDE-yet.png">
+                    </section>
+
+
+                    <section>
+                        <h3>In many languages...</h3>
+<pre><code data-trim data-noescape>
+#include &lt;iostream&gt;
+
+int main(){
+    unsigned int a = 2;
+    a -= 5.3;
+    std::cout << a << std::endl;
+}
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+$ g++ main.cpp -o cpp -Wall -ansi -pedantic
+# No errors or warning
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+$ ./cpp 
+4294967293
+</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Discovering the language</h2>
+                        <p>Goal: find matches with hardcoded file and pattern</p>
+                    </section>
+                    <section>
+                        <h3>First step: file reading</h3>
+                        <pre><code data-trim data-noescape>
+# renaud.txt
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi
+
+J'ai troqué mes santiag'
+Et mon cuir un peu zone
+contre une paire de dockside
+Et un vieux ciré jaune,</code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+
+use std::fs::File;
+use std::io::prelude::*;
+use std::error::Error;
+<span class="fragment">
+fn main() {
+    let filename = "renaud.txt";
+    println!("Reading {}", filename);
+</span><span class="fragment">
+    let mut f = match File::open(&filename) {
+        Err(why) => panic!("couldn't open {}: {}",
+                        filename,
+                        why.description()),
+        Ok(file) => file,
+    };
+</span><span class="fragment">
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)
+        .expect("Something went wrong reading the file");
+</span><span class="fragment">
+    println!("\n{}", contents);
+}
+</span>
+                        </code></pre>
+                    </section>
+
+                    <section>
+                    <section>
+                        <a href="https://doc.rust-lang.org/std/result/enum.Result.html">Result</a>
+                    </section>
+                        <h3>Valid file</h3>
+                        <pre><code data-trim data-noescape>
+Reading renaud.txt
+
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi
+
+J'ai troqué mes santiag'
+Et mon cuir un peu zone
+contre une paire de dockside
+Et un vieux ciré jaune,
+                        </code></pre>
+<span class="fragment">
+                        <h3>Non-existing file</h3>
+                        <pre><code data-trim data-noescape>
+Reading plop.txt
+thread 'main' panicked at 'couldn't open plop.txt: entity not found', src/main.rs:12:20
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
+                        </code></pre></span>
+                    </section>
+
+                    <section>
+                        <h3>Second step: finding matches</h3>
+                        <pre><code data-trim data-noescape>
+fn search(query: &str, contents: &str) -> Vec &lt;String> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(String::from(line));
+        }
+    }
+
+    results
+}
+</code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+fn main() {
+    let filename = "renaud.txt";
+    let query = "mer";
+    // ...
+    // Replace file display with match display:
+    let matches = search(query, &contents);
+    println!("Matches for \"{}\":\n", query);
+    for current_match in matches {
+        println!("{}", current_match);
+    }
+}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+     Running `target/debug/demo-rust`
+Reading renaud.txt
+Matches for "plop":
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <pre><code data-trim data-noescape>
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let contents = "\
+C'est pas l'homme qui prend la mer
+C'est la mer qui prend l'homme
+Moi la mer elle m'a pris
+Je m'souviens, un mardi";
+
+        assert_eq!(
+            vec!["Je m'souviens, un mardi"],
+            search("mardi", contents)
+        );
+    }
+}</code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+$ cargo test    
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/demo-rust)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.82 secs
+     Running target/debug/deps/demo_rust-84797c122ed591c9
+
+running 1 test
+test test::one_result ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+</code></pre>
+                    </section>
+
+                    <section>
+                        <h3>A reference instead of a copy</h3>
+                        <pre><code data-trim data-noescape>
+fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+let matches = search(query, &contents);
+println!("Matches for \"{}\":\n", query);
+for current_match in matches {
+    println!("{}", current_match);
+}
+<span class="fragment">// What if...
+contents += "plop";</span>
+                        </code></pre>
+                        <h3 class="fragment">Enter the borrow checker</h3>
+                        <pre class="fragment"><code data-trim data-noescape>
+error[E0502]: cannot borrow `contents` as mutable because
+it is also borrowed as immutable
+  --> src/main.rs:38:5
+   |
+34 |  let matches = search(query, &contents);
+   |                               -------- immutable borrow
+                                            occurs here
+...
+38 |  contents += "plop";
+   |  ^^^^^^^^ mutable borrow occurs here
+39 | }
+   | - immutable borrow ends here
+                        </code></pre>
+                    </section>
+                    <section>
+                        Ok, let's take a step back. What are the implications ?
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+{
+    let matches = search(query, &contents);
+    println!("Matches for \"{}\":\n", query);
+    for current_match in matches {
+        println!("{}", current_match);
+    }
+}
+contents += "plop";
+                        </code></pre>
+                    </section>
+                </section>
+
+
+                <section>
+                    <section>
+                        <h2>Community</h2>
+                        <p>Goal: add CLI support</p>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Active subreddit (r/rust)</li>
+                            <li>This Week in Rust (.org)</li>
+                            <li>Meetups</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Crates.io</h3>
+
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+# Cargo.toml
+[package]
+name = "demo-rust"
+version = "0.1.0"
+authors = ["clement camin &lt;clement@keiruaprod.fr&gt;"]
+
+<span class="fragment">[dependencies]
+clap="2.29.1"</span></code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim data-noescape>
+extern crate clap;
+use clap::{App, Arg};
+// ...
+fn main() {
+    let parameters = App::new("rust-demo")
+                        .version("1.0")
+                        .about("Search for strings in file")
+                        .arg(Arg::with_name("pattern")
+                            .help("The string we are looking for")
+                            .index(1)
+                            .required(true))
+                        .arg(Arg::with_name("file")
+                            .help("The file we want to open")
+                            .index(2)
+                            .required(true))
+                        .get_matches();
+
+    let filename = parameters.value_of("file").unwrap();
+    let query = parameters.value_of("pattern").unwrap();
+    // ...</code></pre>
+                   </section>
+                   <section>
+<pre><code data-trim data-noescape>$ cargo build --release
+   Compiling libc v0.2.35
+   Compiling bitflags v1.0.1
+   ...
+   Compiling atty v0.2.6
+   Compiling clap v2.29.1
+   Compiling demo-rust v0.1.0 (file:///home/clem/dev/rust-intro/code)
+    Finished release [optimized] target(s) in 30.13 secs
+<span class="fragment">$ ./target/release/demo-rust 
+error: The following required arguments were not provided:
+    &lt;pattern&gt;
+    &lt;file&gt;
+
+USAGE:
+    demo-rust &lt;pattern&gt; &lt;file&gt;
+
+For more information try --help</span>
+<span class="fragment">$ ./target/release/demo-rust mardi renaud.txt
+Reading renaud.txt
+Matches for mardi
+
+Je m'souviens, un mardi</span></code></pre>
+                   </section>
+                   <section>
+                         <ul>
+                             <li><a href="http://www.arewewebyet.org/">Are we web yet?</a></li>
+                             <li><a href="https://zsiciarz.github.io/24daysofrust/index.html">24days of rust</a></li>
+                         </ul>
+                   </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Integration with other languages</h2>
+                    </section>
+                    <section>
+<pre><code data-trim data-noescape>
+[dependencies]
+libc = "*"
+[lib]
+crate-type = ["cdylib"]
+</code></pre>
+<pre class="fragment"><code data-trim data-noescape>
+extern crate libc;
+use libc::uint32_t;
+
+#[no_mangle]
+pub extern fn rs_add(a: uint32_t, b: uint32_t) -> uint32_t {
+    a + b
+}
+</code></pre>
+<pre  class="fragment"><code data-trim data-noescape>
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+
+extern uint32_t rs_add(uint32_t, uint32_t);
+
+int main(void) {
+  uint32_t sum = rs_add(1, 2);
+  printf("%d\n", sum);
+  return 0;
+}
+</code></pre>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Can deal with more complex arguments (str, objects)</li>
+                            <li>Web assembly build target</li>
+                            <li>http://jakegoulding.com/rust-ffi-omnibus for more</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Learning Rust</h2>
+                        <ul>
+                            <li><a href="https://doc.rust-lang.org/book/second-edition/">The Rust Book</a></li>
+                            <li><a href="RustByExample.com">RustByExample.com</a></li>
+                            <li><a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA/videos">Rust youtube channel</a></li>
+                            <li>AreWeIDEYet</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Much more !</h2>
+                        <ul>
+                            <li>generics</li>
+                            <li>traits</li>
+                            <li>functionnal</li>
+                            <li>unsafe</li>
+                            <li>macros</li>
+                            <li>concurrency</li>
+                            <li>quickly evolving</li>
+                            <li>...</li>
+                        </ul>
+                    </section>
+                    <section><h2>Recap</h2></section>
+                </section>
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+            // More info about config & dependencies:
+            // - https://github.com/hakimel/reveal.js#configuration
+            // - https://github.com/hakimel/reveal.js#dependencies
+            Reveal.initialize({
+                dependencies: [
+                    { src: 'plugin/markdown/marked.js' },
+                    { src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                ]
+            });
+        </script>
+    </body>
+</html>
